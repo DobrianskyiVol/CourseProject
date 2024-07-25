@@ -1,0 +1,11 @@
+# ninja log v6
+330	1101	7433524551128506	CMakeFiles/Course_Project_Final_Final.dir/ControllerInterface.cpp.obj	e1ccc8470fd52c5c
+14	6258	7434322101103245	CMakeFiles/Course_Project_Final_Final.dir/Event.cpp.obj	8aefa4512a55d7cb
+10	5930	7436013247202520	CMakeFiles/Course_Project_Final_Final.dir/TaskController.cpp.obj	cb4ea486a9f08d8a
+1104	1257	7433524558968862	CMakeFiles/Course_Project_Final_Final.dir/EventController.cpp.obj	2bf0947ecb712114
+325	1782	7433524551128506	CMakeFiles/Course_Project_Final_Final.dir/Time.cpp.obj	6bf54f17a82fe5e8
+5	3027	7435259732009149	CMakeFiles/Course_Project_Final_Final.dir/main.cpp.obj	be6e9f9a031808d8
+326	1789	7433524551128506	CMakeFiles/Course_Project_Final_Final.dir/Date.cpp.obj	33dadae0e9ff7c8b
+10	6324	7435123428518988	CMakeFiles/Course_Project_Final_Final.dir/Task.cpp.obj	c2e537354402fc4f
+5931	10213	7436013306409532	Course_Project_Final_Final.exe	b172256c60dadb55
+1	1277	7436025066990871	build.ninja	63bdb7dedb6f3bc5
