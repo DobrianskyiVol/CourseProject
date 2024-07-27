@@ -1,38 +1,49 @@
-#include <iostream>
-#include"Event.h"
-#include<list>
-#include<memory>
-#include<algorithm>
-
+#include "EventController.h"
 #include"TaskController.h"
+#include "tabulate/single_include/tabulate/tabulate.hpp"
+#include "Validation.h"
+#include <iostream>
 
-class A{
-private:
-    int _a;
-public:
-    virtual ~A() = default;
-    A():_a(0){};
-    explicit A(int a):_a(a){}
-    virtual void ShowClass() {
-        std::cout << "class A\n";
+void Run() {
+    TaskController task_controller;
+    EventController event_controller;
+    std::cout << "=======================================================\n";
+    std::cout << "      Welcome to your daily events/tasks manager";
+    std::cout << "=======================================================\n";
+    std::cout << "-------------------------------------------------------\n";
+    std::cout << "                        Main menu                       ";
+    std::cout << "-------------------------------------------------------\n";
+    while (true) {
+        tabulate::Table table;
+        table.add_row({"Press","To..."});
+        table.add_row({"0","Exit"});
+        table.add_row({"1","Go to tasks"});
+        table.add_row({"2","Go to events"});
+        table.add_row({"3","See users instruction"});
+        std::cout << table << "\n";
+        std::cout << "Your choice is:";
+        int choice = GetValidIntegerInput();
+        if (choice == 0) {
+            break;
+        }
+        switch (choice) {
+            case 1:
+                task_controller.Run();
+                break;
+            case 2:
+                event_controller.Run();
+                break;
+            case 3:
+                std::cout << "Users manual book in files\n";
+                break;
+            default:
+                std::cerr << "Out of range option\n";
+        }
     }
-
-};
-
-class B:public A {
-    int _b;
-public:
-   virtual ~B() = default;
-    B():A(),_b(0){};
-    B(int a, int b):A(a),_b(b){}
-    void ShowClass() override {
-        std::cout << "Show B\n";
-    };
-};
+}
 
 int main()
 {
-   TaskController task_controller;
-    task_controller.Run();
+    Run();
     return 0;
 }

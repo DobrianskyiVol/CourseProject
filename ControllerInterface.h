@@ -22,9 +22,9 @@ private:
     //Working with file
     virtual void WriteToFile() = 0;
     virtual void ReadFromFile() = 0;
-    virtual void ReadFromFile(std::list<std::unique_ptr<Task>> &tasks,std::string date_name) = 0;
-    virtual void AppendToFile(Task *task) = 0;
-    virtual void AppendToFile(std::string date_name, Task *task) = 0;
+   // virtual void AppendToFile(Task &task) = 0;
+    //virtual void ReadFromFile(std::list<std::unique_ptr<Task>> &tasks,std::string date_name) = 0;
+    //virtual void AppendToFile(std::string date_name, Task &task) = 0;
     //Show
     virtual void Show() = 0;
     virtual void PrintMenu() = 0;

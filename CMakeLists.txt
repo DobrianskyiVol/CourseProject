@@ -18,6 +18,5 @@ add_executable(Course_Project_Final_Final main.cpp
         EventController.cpp
         EventController.h
         Validation.h
-        FileManager.cpp
         FileManager.h
 )

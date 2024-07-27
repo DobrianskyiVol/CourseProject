@@ -33,7 +33,7 @@ public:
     void SetDuration(int _duration) const;
     void SetPriority(int _priority) const;
 
-    virtual void ShowTask();
+    virtual void ShowTask() const = 0;
     //Overloaded operators
     friend std::ostream& operator<<(std::ostream& os, Task& task);
     friend std::istream& operator>>(std::istream& is, Task& task);

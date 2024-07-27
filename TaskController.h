@@ -8,6 +8,7 @@
 #include "Date.h"
 #include "Task.h"
 #include"Validation.h"
+#include"FileManager.h"
 
 class TaskController:public ControllerInterface {
 public:
@@ -17,6 +18,7 @@ public:
 private:
     std::unique_ptr<Date> date_;
     std::list<std::unique_ptr<Task>> tasks_;
+    std::unique_ptr<FileManager> file_manager_;
     //CRUD operations
     void Add() override;
     void Edit() override;
@@ -26,10 +28,11 @@ private:
     void Delay() override;
     //Working with file
     void ReadFromFile() override;
-    void ReadFromFile(std::list<std::unique_ptr<Task>> &tasks,std::string date_name) override;
+    void ReadFromFile(std::list<std::unique_ptr<Task>> &tasks,const std::string& date_name);
     void WriteToFile() override;
-    void AppendToFile(Task *task) override;
-    void AppendToFile(std::string date_name, Task *task) override;
+    void AppendToFile(Task &task);
+    //void AppendToFile(Task *task) override;
+    void AppendToFile(const std::string& date_name, Task &task);
     //Sort Methods
     void SortByName() override;
     void SortByPriority() override;

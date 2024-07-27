@@ -48,21 +48,21 @@ inline int GetUserChoice(const std::vector<int> &validChoices) {
         }
     }
 }
-
-inline bool CheckUniqueName(std::string &name,std::list<std::unique_ptr<Task>> &tasks) {
-    bool unique = std::all_of(tasks.begin(), tasks.end(),
-                              [&name](const std::unique_ptr<Task>& event) {
-                                  return event->GetName() != name;
+template<typename T>
+bool CheckUniqueName(std::string &name,std::list<std::unique_ptr<T>> &items) {
+    bool unique = std::all_of(items.begin(), items.end(),
+                              [&name](const std::unique_ptr<T>& item) {
+                                  return item->GetName() != name;
                               });
     return unique;
 }
-
-inline bool CheckTime(Time &time,std::list<std::unique_ptr<Task>> &tasks) {
-    bool isOnTheTasks = std::none_of(tasks.begin(), tasks.end(),
-        [&time](const std::unique_ptr<Task>& event) {
-            return (time == event->GetTime()) ||
-                (time < event->GetTime().addMinutes(event->GetDuration()) &&
-                    time > event->GetTime());
+template<typename T>
+bool CheckTime(Time &time,std::list<std::unique_ptr<T>> &items) {
+    bool isOnTheTasks = std::none_of(items.begin(), items.end(),
+        [&time](const std::unique_ptr<T>& item) {
+            return (time == item->GetTime()) ||
+                (time < item->GetTime().addMinutes(item->GetDuration()) &&
+                    time > item->GetTime());
         });
     return isOnTheTasks;
 }

@@ -56,13 +56,6 @@ void Task::SetPriority(const int _priority) const {
     *priority = _priority;
 }
 //Show method
-void Task::ShowTask() {
-    tabulate::Table table;
-    table.add_row({"Name","Time","Duration","Priority"});
-    table.add_row(
-        {name,time->GetTime(),std::to_string(*duration),std::to_string(*priority)});
-    std::cout << table << "\n";
-}
 
 //Read and Write method for streming
 std::ostream &Task::Read(std::ostream &os) {

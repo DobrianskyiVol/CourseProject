@@ -45,8 +45,8 @@ void Event::ShowTask() {
 //Write and Read method
 std::ostream &Event::Read(std::ostream &os) {
     Task::Read(os);
-    os << place;
-    os << people_to_meet;
+    os << place << "\n";
+    os << people_to_meet << "\n";
     return os;
 }
 std::istream &Event::Write(std::istream &is) {
@@ -54,6 +54,12 @@ std::istream &Event::Write(std::istream &is) {
     is >> place;
     is >> people_to_meet;
     return is;
+
 }
 
-
+std::ostream &operator <<(std::ostream &os,Event &event) {
+    return event.Read(os);;
+};
+std::istream &operator >>(std::istream &is,Event &event) {
+    return event.Write(is);;
+};

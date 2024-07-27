@@ -29,6 +29,8 @@ public:
     std::istream &Write(std::istream &is) override;
     std::ostream &Read(std::ostream &os) override;
 
+    friend std::ostream &operator <<(std::ostream &os,Event &event);
+    friend std::istream &operator >>(std::istream &is,Event &event);
 };
 
 

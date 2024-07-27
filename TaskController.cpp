@@ -2,88 +2,36 @@
 
 #include <thread>
 
-TaskController::TaskController():date_(std::make_unique<Date>()) {
+TaskController::TaskController():
+    date_(std::make_unique<Date>()),file_manager_(std::make_unique<FileManager>())
+{
     date_->SetCurrentDate();
 }
 
 //Working with files
 void TaskController::ReadFromFile() {
     std::string folder = R"(D:\C++\Course_Project_Final_Final\Tasks\)";
-    std::string nameoffile = (folder  +  date_->GetDate() + ".txt");
-    std::ifstream of(nameoffile);
-    if (!of) {
-        //std::cout << "No events for current day\n";
-        return;
-    }
-
-    while (!of.eof()) {
-        std::unique_ptr<Task> task = std::make_unique<Task>();
-        of >> *task;
-        if (task->GetPriority() == 0)
-            break;
-        tasks_.emplace_back(std::move(task));
-    }
-    of.close();
+    file_manager_->ReadFromFile<Task>(folder,date_->GetDate(),tasks_);
 }
 
-void TaskController::ReadFromFile(std::list<std::unique_ptr<Task>> &tasks,std::string date_name) {
+void TaskController::ReadFromFile(std::list<std::unique_ptr<Task>> &tasks,const std::string& date_name) {
     std::string folder = R"(D:\C++\Course_Project_Final_Final\Tasks\)";
-    std::string nameoffile = (folder  +  date_name + ".txt");
-    std::ifstream of(nameoffile);
-    if (!of) {
-        //std::cout << "No events for current day\n";
-        return;
-    }
-
-    while (!of.eof()) {
-        std::unique_ptr<Task> task = std::make_unique<Task>();
-        of >> *task;
-        if (task->GetPriority() == 0)
-            break;
-        tasks.emplace_back(std::move(task));
-    }
-    of.close();
+    file_manager_->ReadFromFile<Task>(folder,date_name,tasks);
 }
 
 void TaskController::WriteToFile() {
     std::string folder = R"(D:\C++\Course_Project_Final_Final\Tasks\)";
-    std::string nameoffile = (folder  +  date_->GetDate() + ".txt");
-    std::ofstream of(nameoffile);
-    if (!of) {
-        std::cerr << "Error opening file: " << nameoffile << std::endl;
-        return;
-    }
-    if (!tasks_.empty()) {
-        std::for_each(tasks_.begin(), tasks_.end(), [&of](const std::unique_ptr<Task> &event) {
-            of << *event;
-        });
-    }
-    of.close();
+   file_manager_->WriteToFile<Task>(folder,date_->GetDate(),tasks_);
 }
 
-void TaskController::AppendToFile(Task *task) {
+void TaskController::AppendToFile(Task &task) {
     std::string folder = R"(D:\C++\Course_Project_Final_Final\Tasks\)";
-    std::string nameoffile = (folder  +  date_->GetDate() + ".txt");
-    std::ofstream of(nameoffile,std::ios::app);
-    if (!of) {
-        std::cerr << "Error opening file: " << nameoffile << std::endl;
-        return;
-    }
-    of << *task;
-
-    of.close();
+   file_manager_->AppendToFile<Task>(folder,date_->GetDate(),task);
 }
 
-void TaskController::AppendToFile(std::string date_name, Task *task) {
+void TaskController::AppendToFile(const std::string& date_name, Task &task) {
     std::string folder = R"(D:\C++\Course_Project_Final_Final\Tasks\)";
-    std::string nameoffile = (folder  +  date_name + ".txt");
-    std::ofstream of(nameoffile,std::ios::app);
-    if (!of) {
-        std::cerr << "Error opening file: " << nameoffile << std::endl;
-        return;
-    }else
-        of << *task;
-    of.close();
+   file_manager_->AppendToFile<Task>(folder,date_name,task);
 }
 
 //CRUD operations
@@ -131,7 +79,7 @@ void TaskController::Add() {
     }
 
     std::unique_ptr<Task> task = std::make_unique<Task>(name,*time,duration,priority);
-    AppendToFile(&*task);
+    AppendToFile(*task);
     std::cout << "Task was added successfully\n";
     tasks_.emplace_back(std::move(task));
 }
@@ -461,7 +409,7 @@ void TaskController::Delay() {
 
             std::string date_name = date.GetDate();
             CheckName(date_name, task_name);
-            AppendToFile(date.GetDate(), it->get());
+            AppendToFile(date.GetDate(), **it);
             tasks_.erase(it);
             break;
         }
