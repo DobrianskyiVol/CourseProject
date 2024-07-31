@@ -14,15 +14,15 @@ std::string Event::GetPeopleToMeet() {
     return people_to_meet;
 }
 //Setters
-void Event::SetPlace(std::string &_place) {
+void Event::SetPlace(const std::string &_place) {
     place = _place;
 }
 
-void Event::SetPeopleToMeet(std::string &_people) {
+void Event::SetPeopleToMeet(const std::string &_people) {
     people_to_meet = _people;
 }
 
-void Event::ShowTask() {
+void Event::ShowTask()const {
     tabulate::Table table;
     table.add_row(
         {"Name","Place","People to meet","Time","Duration","Priority"});
@@ -42,15 +42,35 @@ void Event::ShowTask() {
     std::cout << table << "\n";
 }
 
+tabulate::Table Event::GetEventTable() {
+    tabulate::Table table;
+    table.add_row(
+        {"Name","Place","People to meet","Time","Duration","Priority"});
+    for (int i = 0; i < 6;i++) {
+        table[0][i].format().font_color(tabulate::Color::blue);
+    }
+    table.add_row(
+        {
+            GetName(),
+            place,
+            people_to_meet,
+            GetTime().GetTime(),
+            std::to_string(GetDuration()),
+            std::to_string(GetPriority())
+        }
+        );
+    return table;
+}
+
 //Write and Read method
-std::ostream &Event::Read(std::ostream &os) {
-    Task::Read(os);
+std::ostream &Event::Write(std::ostream &os) {
+    Task::Write(os);
     os << place << "\n";
     os << people_to_meet << "\n";
     return os;
 }
-std::istream &Event::Write(std::istream &is) {
-    Task::Write(is);
+std::istream &Event::Read(std::istream &is) {
+    Task::Read(is);
     is >> place;
     is >> people_to_meet;
     return is;
@@ -58,8 +78,8 @@ std::istream &Event::Write(std::istream &is) {
 }
 
 std::ostream &operator <<(std::ostream &os,Event &event) {
-    return event.Read(os);;
+    return event.Write(os);;
 };
 std::istream &operator >>(std::istream &is,Event &event) {
-    return event.Write(is);;
+    return event.Read(is);;
 };

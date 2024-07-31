@@ -23,7 +23,7 @@ public:
     Task(const Task &task);
     Task(Task &&task) noexcept;
     //Getters
-    std::string  GetName();
+    [[nodiscard]] std::string  GetName() const;
     [[nodiscard]] Time GetTime() const;
     [[nodiscard]] int GetDuration() const;
     [[nodiscard]] int GetPriority() const;
@@ -38,8 +38,8 @@ public:
     friend std::ostream& operator<<(std::ostream& os, Task& task);
     friend std::istream& operator>>(std::istream& is, Task& task);
     //Write method
-    virtual std::istream &Write(std::istream &is);
-    virtual std::ostream &Read(std::ostream &os);
+    virtual std::istream &Read(std::istream &is);
+    virtual std::ostream &Write(std::ostream &os);
 };
 
 

@@ -20,14 +20,14 @@ public:
     std::string GetPlace();
     std::string GetPeopleToMeet();
 
-    void SetPlace(std::string &_place);
-    void SetPeopleToMeet(std::string &_people);
+    void SetPlace(const std::string &_place);
+    void SetPeopleToMeet(const std::string &_people);
 
-    void ShowTask() override;
-
+    void ShowTask() const override;
+    tabulate::Table GetEventTable();
     //
-    std::istream &Write(std::istream &is) override;
-    std::ostream &Read(std::ostream &os) override;
+    std::istream &Read(std::istream &is) override;
+    std::ostream &Write(std::ostream &os) override;
 
     friend std::ostream &operator <<(std::ostream &os,Event &event);
     friend std::istream &operator >>(std::istream &is,Event &event);

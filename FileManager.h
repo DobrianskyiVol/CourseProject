@@ -14,6 +14,7 @@ class FileManager {
     std::mutex mutex_;
 public:
     FileManager() = default;
+    ~FileManager() = default;
     template<typename T>
     void ReadFromFile(const std::string &folder, const std::string &date, std::list<std::unique_ptr<T> > &items) {
         std::string nameoffile = folder + date + ".txt";

@@ -17,7 +17,7 @@
 
 class EventController:public ControllerInterface {
 public:
-    ~EventController() override = default;
+    ~EventController() override;
     EventController();
     void Run() override;
     void EventReminder();
@@ -25,8 +25,9 @@ private:
     std::list<std::unique_ptr<Event>> events_;
     std::unique_ptr<Date> date_;
     std::unique_ptr<FileManager> file_manager_;
-    //std::thread reminder_thread_;
+    std::thread reminder_thread_;
     std::mutex mutex_;
+    bool stop_event_reminder_;
     //CRUD operations
     void Add() override;
     void Edit() override;
@@ -37,11 +38,11 @@ private:
     void DeletePassedEvents();
     //Working with file
     void ReadFromFile() override;
-    void ReadFromFile(std::list<std::unique_ptr<Event>> &events,const std::string& date_name);
+    void ReadFromFile(std::list<std::unique_ptr<Event>> &events,const std::string& date_name) const;
     void WriteToFile() override;
     //void AppendToFile(Task *event) override;
-    void AppendToFile(const std::string& date_name, Event &event);
-    void AppendToFile(Event &event);
+    void AppendToFile(const std::string& date_name, Event &event) const;
+    void AppendToFile(Event &event) const;
     //Sort Methods
     void SortByName() override;
     void SortByPriority() override;
@@ -62,6 +63,10 @@ private:
     void CheckHour();
     //Analyze conflicts
     void AnalyzeConflicts() override;
+    //Find
+    auto FindEventByName(std::string &name);
+    //Event Reminder
+    void StartEventReminder();
 };
 
 

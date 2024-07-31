@@ -79,12 +79,6 @@ build CMakeFiles/Course_Project_Final_Final.dir/Event.cpp.obj: CXX_COMPILER__Cou
   OBJECT_DIR = CMakeFiles\Course_Project_Final_Final.dir
   OBJECT_FILE_DIR = CMakeFiles\Course_Project_Final_Final.dir
 
-build CMakeFiles/Course_Project_Final_Final.dir/TaskController.cpp.obj: CXX_COMPILER__Course_Project_Final_Final_unscanned_Debug D$:/C++/Course_Project_Final_Final/TaskController.cpp || cmake_object_order_depends_target_Course_Project_Final_Final
-  DEP_FILE = CMakeFiles\Course_Project_Final_Final.dir\TaskController.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
-  OBJECT_DIR = CMakeFiles\Course_Project_Final_Final.dir
-  OBJECT_FILE_DIR = CMakeFiles\Course_Project_Final_Final.dir
-
 build CMakeFiles/Course_Project_Final_Final.dir/EventController.cpp.obj: CXX_COMPILER__Course_Project_Final_Final_unscanned_Debug D$:/C++/Course_Project_Final_Final/EventController.cpp || cmake_object_order_depends_target_Course_Project_Final_Final
   DEP_FILE = CMakeFiles\Course_Project_Final_Final.dir\EventController.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always
@@ -99,7 +93,7 @@ build CMakeFiles/Course_Project_Final_Final.dir/EventController.cpp.obj: CXX_COM
 #############################################
 # Link the executable Course_Project_Final_Final.exe
 
-build Course_Project_Final_Final.exe: CXX_EXECUTABLE_LINKER__Course_Project_Final_Final_Debug CMakeFiles/Course_Project_Final_Final.dir/main.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/Time.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/Date.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/Task.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/Event.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/TaskController.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/EventController.cpp.obj
+build Course_Project_Final_Final.exe: CXX_EXECUTABLE_LINKER__Course_Project_Final_Final_Debug CMakeFiles/Course_Project_Final_Final.dir/main.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/Time.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/Date.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/Task.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/Event.cpp.obj CMakeFiles/Course_Project_Final_Final.dir/EventController.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Course_Project_Final_Final.dir

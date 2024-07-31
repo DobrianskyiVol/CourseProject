@@ -50,7 +50,7 @@ void Time::SetTime() {
                 break;
             }
         }else
-            std::cout << "Incorrect input.Please try again\n";
+            std::cerr << "Incorrect input.Please try again\n";
     }
 }
 

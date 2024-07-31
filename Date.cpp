@@ -92,7 +92,7 @@ void Date::SetDate() {
             std::cerr << "Invalid date or time entered.\n" << std::endl;
             *year = *month = *day =  0;
         } else {
-            std::cout << "Date and time entered successfully.\n" << std::endl;
+            //std::cout << "Date and time entered successfully.\n" << std::endl;
             break;
         }
     }

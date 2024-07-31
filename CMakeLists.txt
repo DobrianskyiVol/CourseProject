@@ -13,8 +13,6 @@ add_executable(Course_Project_Final_Final main.cpp
         Event.cpp
         Event.h
         ControllerInterface.h
-        TaskController.cpp
-        TaskController.h
         EventController.cpp
         EventController.h
         Validation.h

@@ -24,7 +24,7 @@ Task::Task(Task &&task) noexcept {
     priority = std::move(task.priority);
 }
 //Getters
-std::string Task::GetName() {
+std::string Task::GetName()const {
     return name;
 }
 
@@ -58,7 +58,7 @@ void Task::SetPriority(const int _priority) const {
 //Show method
 
 //Read and Write method for streming
-std::ostream &Task::Read(std::ostream &os) {
+std::ostream &Task::Write(std::ostream &os) {
     os << name << "\n";
     os << *time;
     os << *duration << "\n";
@@ -66,7 +66,7 @@ std::ostream &Task::Read(std::ostream &os) {
     return os;
 }
 
-std::istream &Task::Write(std::istream &is) {
+std::istream &Task::Read(std::istream &is) {
     if (!std::getline(is >> std::ws, name)) {
         return is; // Return if reading failed
     }
@@ -84,10 +84,10 @@ std::istream &Task::Write(std::istream &is) {
 
 //Overloaded operators
 std::ostream& operator<<(std::ostream& os,Task& task) {
-    return task.Read(os);
+    return task.Write(os);
 };
 std::istream& operator>>(std::istream& is, Task& task) {
-    return task.Write(is);
+    return task.Read(is);
 }
 
 

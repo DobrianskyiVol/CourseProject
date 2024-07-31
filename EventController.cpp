@@ -2,9 +2,20 @@
 
 #include "Event.h"
 
+auto EventController::FindEventByName(std::string &name) {
+    return std::find_if(events_.begin(), events_.end(),
+       [&name](const std::unique_ptr<Event>& event) {
+           return event->GetName() == name;
+       });
+
+}
+
+EventController::~EventController() {
+    stop_event_reminder_ = false;
+}
 
 EventController::EventController():
-    date_(std::make_unique<Date>()),file_manager_(std::make_unique<FileManager>())
+    date_(std::make_unique<Date>()),file_manager_(std::make_unique<FileManager>()),stop_event_reminder_(true)
 {
     date_->SetCurrentDate();
 }
@@ -14,12 +25,12 @@ void EventController::ReadFromFile() {
     file_manager_->ReadFromFile<Event>(folder,date_->GetDate(),events_);
 }
 
-void EventController::ReadFromFile(std::list<std::unique_ptr<Event> > &events, const std::string& date_name) {
+void EventController::ReadFromFile(std::list<std::unique_ptr<Event> > &events, const std::string& date_name) const {
     std::string folder = R"(D:\C++\Course_Project_Final_Final\Events\)";
     file_manager_->ReadFromFile<Event>(folder,date_name,events);
 }
 
-void EventController::AppendToFile(const std::string& date_name, Event &event) {
+void EventController::AppendToFile(const std::string& date_name, Event &event) const {
     std::string folder = R"(D:\C++\Course_Project_Final_Final\Events\)";
     file_manager_->AppendToFile<Event>(folder,date_name,event);
 }
@@ -29,7 +40,7 @@ void EventController::WriteToFile() {
     file_manager_->WriteToFile<Event>(folder,date_->GetDate(),events_);
 }
 
-void EventController::AppendToFile(Event &event) {
+void EventController::AppendToFile(Event &event) const {
     std::string folder = R"(D:\C++\Course_Project_Final_Final\Events\)";
     file_manager_->AppendToFile<Event>(folder,date_->GetDate(),event);
 }
@@ -43,10 +54,14 @@ void EventController::Add() {
     while (true) {
         //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::getline(std::cin, name);
+        if(name.empty()) {
+            std::cerr << "You must fill this field\n";
+            continue;
+        }
         if (CheckUniqueName(name, events_))
             break;
         else {
-            std::cout << "The name must be unique. Please try to choose a new name.\n";
+            std::cerr << "The name must be unique. Please try to choose a new name.\n";
         }
     }
 
@@ -55,9 +70,14 @@ void EventController::Add() {
     std::getline(std::cin, venue);
 
     // Get people
-    std::cout << "Enter people or person you will meet:\n";
-    std::getline(std::cin, people);
-
+    while (true) {
+        std::cout << "Enter people or person you will meet:\n";
+        std::getline(std::cin, people);
+        if (!name.empty()) {
+            break;
+        }else
+            std::cerr << "You must fill this field\n";
+    }
     // Get start time
     std::cout << "What time does it start:\n";
     Time time;
@@ -102,10 +122,7 @@ void EventController::Edit() {
    // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::getline(std::cin, event_name);
 
-    auto it = std::find_if(events_.begin(), events_.end(),
-        [&event_name](const std::unique_ptr<Event>& event) {
-            return event->GetName() == event_name;
-        });
+    auto it = FindEventByName(event_name);
 
     if (it != events_.end()) {
         std::string new_name;
@@ -222,6 +239,7 @@ void EventController::Edit() {
                 std::cout << "Current arranged time for the event: " << it->get()->GetTime().GetTime() << "\n";
                 std::cout << "Press 1 if you want to change the time \n";
                 std::cout << "Press 0 to leave as it is \n";
+                std::cin.ignore();
                 choice = GetValidIntegerInput();
                // std::cin.ignore(); // Ignore leftover newline character
                 if (choice == 0) {
@@ -277,7 +295,7 @@ void EventController::Edit() {
         } catch (const std::exception &e) {
             std::cerr << "Failed to apply changes: " << e.what() << "\n";
         }
-        std::cout << "Changes was applied\n";
+        std::cout << "Changes were applied\n";
     } else {
         std::cerr << "Event not found.\n";
     }
@@ -289,10 +307,7 @@ void EventController::Delete() {
     //std::cin.ignore();
     std::getline(std::cin, event_name);
 
-    auto it = std::find_if(events_.begin(), events_.end(),
-        [&event_name](const std::unique_ptr<Event>& event) {
-            return event->GetName() == event_name;
-        });
+    auto it = FindEventByName(event_name);
 
     if (it != events_.end()) {
         std::cout << "Are you sure you want to delete that event? \n";
@@ -331,10 +346,6 @@ void EventController::DeleteAll() {
         while (true) {
             int choice = GetValidIntegerInput();
 
-            // Check for invalid input
-
-            //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear newline character
-
             if (choice == 1) {
                 events_.clear();
                 std::cout << "Events have been deleted.\n";
@@ -366,16 +377,25 @@ void EventController::DeleteAll() {
 
 void EventController::DeletePassedEvents() {
     Time now = Time::getCurrentTime();
-    events_.remove_if([&now](const std::unique_ptr<Event>& ev) {
-        return ev->GetTime() < now;
-    });
-    std::cout << "Passed events was deleted successfully\n";
+    std::cout << "To delete passed events enter 1;\n";
+    std::cout << "To cancel enter 0;\n";
+    std::cout << "Your choice:";
+    int choice = GetUserChoice({0,1});
+    if (choice == 1) {
+        events_.remove_if([&now](const std::unique_ptr<Event>& ev) {
+            return ev->GetTime() < now;
+        });
+        std::cout << "Passed events was deleted successfully\n";
+    }
+    else
+        std::cout << "You've cancelled the deletion\n";
+
 }
 
 void EventController::Reschedule() {
 
     std::string name_of_event;
-    std::cout << "Enter the name of the evets you'd like to reschedule: ";
+    std::cout << "Enter the name of the event you'd like to reschedule: ";
     //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::getline(std::cin, name_of_event);
 
@@ -394,6 +414,7 @@ void EventController::Reschedule() {
             new_time.SetTime();
             if (new_time < Time::getCurrentTime()) {
                 std::cerr << "You can't reschedule the event to a past time.\n";
+                std::this_thread::sleep_for(std::chrono::microseconds(50));
             } else {
                 std::cout << "Press 1 to confirm the changes\n";
                 std::cout << "Press 0 to cancel\n";
@@ -422,10 +443,7 @@ void EventController::Delay() {
         //std::cin.ignore();
         std::getline(std::cin, event_name);
 
-        auto it = std::find_if(events_.begin(), events_.end(),
-            [&event_name](const std::unique_ptr<Event>& event) {
-                return event->GetName() == event_name;
-            });
+        auto it = FindEventByName(event_name);
 
         if (it == events_.end()) {
             std::cerr << "No such event name.\n";
@@ -434,7 +452,8 @@ void EventController::Delay() {
 
         Date date;
         while (true) {
-            std::cout << "Press 1 to rearrange event for today\n";
+            if (!(Date::getCurrentDate() == *date_))
+                std::cout << "Press 1 to rearrange event for today\n";
             std::cout << "Press 2 to rearrange for another day\n";
             std::cout << "Press 0 to exit\n";
 
@@ -446,7 +465,12 @@ void EventController::Delay() {
 
             switch (choice) {
                 case 1:
-                    date.SetCurrentDate();
+                    if (!(Date::getCurrentDate() == *date_))
+                        date.SetCurrentDate();
+                    else {
+                        std::cerr << "This function is unable for todays events\n";
+                        continue;
+                    }
                 break;
                 case 2:
                     while (true) {
@@ -507,17 +531,51 @@ void EventController::SortByPeopleToMeet() {
 //Show methods
 void EventController::Show() {
     if (events_.empty()) {
-        std::cerr << "No tasks for current day\n";
+        std::cerr << "\nNo tasks for the current day.\n\n";
         return;
+    }
+
+    if (events_.size() > 1) {
+        std::cout << "\nWould you like to sort the events?\n";
+        std::cout << "1. Yes\n";
+        std::cout << "0. No\n";
+        std::cout << "Your choice:";
+        int choice = GetUserChoice({1, 0});
+        if (choice == 1) {
+            std::cout << "\nSort by:\n";
+            std::cout << "1. Name\n";
+            std::cout << "2. Priority\n";
+            std::cout << "3. Time\n";
+            std::cout << "4. People to Meet\n";
+            std::cout << "Your choice:";
+            choice = GetUserChoice({1, 2, 3, 4});
+            switch (choice) {
+                case 1:
+                    SortByName();
+                break;
+                case 2:
+                    SortByPriority();
+                break;
+                case 3:
+                    SortByTime();
+                break;
+                case 4:
+                    SortByPeopleToMeet();
+                break;
+                default:
+                    std::cerr << "Invalid choice. Please try again.\n";
+            }
+        }
     }
 
     tabulate::Table table;
     table.add_row({"Name", "Place", "Priority", "People", "Start at", "Duration"});
     for (int i = 0; i < 6; i++) {
-        table[0][i].format().font_color(tabulate::Color::cyan);
+        table[0][i].format().font_color(tabulate::Color::cyan)
+                             .font_style({tabulate::FontStyle::bold});
     }
 
-    std::for_each(events_.begin(), events_.end(), [&table](const std::unique_ptr<Event>& event) {
+    for (const auto& event : events_) {
         table.add_row({
             event->GetName(),
             event->GetPlace(),
@@ -526,9 +584,9 @@ void EventController::Show() {
             event->GetTime().GetTime(),
             std::to_string(event->GetDuration())
         });
-    });
+    }
 
-    std::cout << table << std::endl;
+    std::cout << "\n" << table << "\n\n";
 }
 
 void EventController::PrintMenu() {
@@ -546,16 +604,15 @@ void EventController::PrintMenu() {
         }else {
             table.add_row({"2","Edit the Event by name"});
             table.add_row({"3","Delete the Event by name"});
-            table.add_row({"4","Sort the Events by Name"});
-            table.add_row({"5","Sort the Events by Time"});
-            table.add_row({"6","Sort the Events by Priority"});
-            table.add_row({"7","Reschedule the Event by name"});
-            table.add_row({"8","Analyze conflicts"});
-            table.add_row({"9","See Events"});
+            table.add_row({"4","Show event table"});
+            table.add_row({"5","Change time for the Event"});
+            table.add_row({"6","Analyze conflicts"});
             if (*date_ ==  Date::getCurrentDate()) {
-                table.add_row({"10","Delete Passed Events"});
+                table.add_row({"7","Delete Passed Events"});
             }
-            table.add_row({"11","See if the time is free"});
+            table.add_row({"8","See if the time is free"});
+            table.add_row({"9","Change the date for event"});
+            table.add_row({"10","Delete all events"});
             std::cout << table << "\n";
         }
 }
@@ -576,9 +633,11 @@ void EventController::AnalyzeConflicts() {
     while (it != events_.end()) {
         table.add_row({
             it->get()->GetName(),
+            it->get()->GetPlace(),
+            std::to_string(it->get()->GetPriority()),
+            it->get()->GetPeopleToMeet(),
             it->get()->GetTime().GetTime(),
             std::to_string(it->get()->GetDuration()),
-            std::to_string(it->get()->GetPriority())
         });
 
         auto currentTaskEnd = it->get()->GetTime().addMinutes(it->get()->GetDuration());
@@ -627,32 +686,28 @@ void EventController::ExecuteChoice(int choice) {
             Delete();
         break;
         case 4:
-            SortByName();
-        Show();
-        break;
-        case 5:
-            SortByTime();
-        break;
-        case 6:
-            SortByPriority();
-        break;
-        case 7:
-            Reschedule();
-        break;
-        case 8:
-            AnalyzeConflicts();
-        break;
-        case 9:
             Show();
         break;
-        case 10:
+        case 5:
+            Reschedule();
+        break;
+        case 6:
+            AnalyzeConflicts();
+        break;
+        case 7:
             if (*date_ == Date::getCurrentDate())
                 DeletePassedEvents();
             else
                 std::cerr << "Out of range option\n";
-         break;
-        case 11:
+        break;
+        case 8:
             CheckHour();
+        break;
+        case 9:
+            Delay();
+        break;
+        case 10:
+            DeleteAll();
             break;
         default:
             std::cerr <<  "Out of range option";
@@ -661,7 +716,8 @@ void EventController::ExecuteChoice(int choice) {
 
 void EventController::Execution() {
     while(true) {
-        EventReminder();
+        //EventReminder();
+        std::cout << "Loading...\n";
         std::this_thread::sleep_for(std::chrono::seconds(2));
         PrintMenu();
         if (events_.empty()) {
@@ -675,7 +731,7 @@ void EventController::Execution() {
         }else {
             //PrintMenu();
             std::cout << "Your choice is: ";
-            std::vector<int> choices = {0,1,2,3,4,5,6,7,8,9,11};
+            std::vector<int> choices = {0,1,2,3,4,5,6,7,8,9,11,12,13};
             if (*date_ == Date::getCurrentDate())
                 choices.push_back(10);
             int choice = GetUserChoice(choices);
@@ -684,6 +740,7 @@ void EventController::Execution() {
             ExecuteChoice(choice);
 
         }
+        WriteToFile();
     }
 }
 
@@ -709,7 +766,7 @@ void EventController::CheckHour() {
     std::cout << "Enter the time you would like to check\n";
     time->SetTime();
     auto it = std::find_if(events_.begin(),events_.end(),
-        [&time](std::unique_ptr<Event> &ev) {
+        [&time](const std::unique_ptr<Event> &ev) {
             return(*time > ev->GetTime() && *time < ev->GetTime().addMinutes(ev->GetDuration()));
         });
     if (it != events_.end()) {
@@ -735,7 +792,7 @@ void EventController::HandleFutureEvents() {
    // EventReminder();
     ReadFromFile();
     std::cout << "-------------------------------------------------------\n";
-    std::cout << "                    Future Evets \n";
+    std::cout << "                    Future Events \n";
     std::cout << "-------------------------------------------------------\n";
     std::cout << "Date: " << date_->GetDate() << "\n";
     Execution();
@@ -743,7 +800,7 @@ void EventController::HandleFutureEvents() {
 }
 
 void EventController::HandleYesterdaysEvents() {
-    EventReminder();
+    //EventReminder();
         ReadFromFile();
         std::cout << "-------------------------------------------------------\n";
         std::cout << "                    Yesterday Events \n";
@@ -767,6 +824,7 @@ void EventController::HandleYesterdaysEvents() {
             table.add_row({"2","Reschedule Event for another day by specific name"});
 
             std::cout << table <<"\n";
+            std::cout << "Your choice: ";
             int choice = GetUserChoice({0,1,2});
             if (choice == 0)
                 break;
@@ -783,7 +841,7 @@ void EventController::HandleYesterdaysEvents() {
             }
         }
 }
-
+//Event reminder
 void EventController::EventReminder() {
     std::string folder = R"(D:\C++\Course_Project_Final_Final\Events\)";
 
@@ -791,30 +849,44 @@ void EventController::EventReminder() {
         Date date;
         date.SetCurrentDate();
         file_manager_->ReadFromFile<Event>(folder,date.GetDate(),events);
-        Time time;
-        time.SetCurrentTime();
+        Time current_time;
+        current_time.SetCurrentTime();
         auto it = std::find_if(events.begin(),events.end(),
-            [&time](const std::unique_ptr<Event> &ev) {
-                return(time > ev->GetTime().addMinutes(-5) && time < ev->GetTime());
+            [&current_time](const std::unique_ptr<Event> &ev) {
+                return(current_time > ev->GetTime().addMinutes(-5) && current_time < ev->GetTime());
 
             });
         if (it != events.end()) {
-            std::lock_guard<std::mutex> lock(mutex_);
-            std::cout << "You have planned event soon\n";
-            it->get()->ShowTask();
+           // std::lock_guard<std::mutex> lock(mutex_);
+            tabulate::Table ev_table = it->get()->GetEventTable();
+            std::stringstream ss;
+            ss << ev_table;
+
+            // Convert the stringstream to a std::string
+            std::string table_string = ss.str();
+            MessageBox(NULL,table_string.c_str(),"Event Reminder",MB_OK);
         }
 
 
 }
 
+void EventController::StartEventReminder() {
+    reminder_thread_ = std::thread([this]() {
+        while (stop_event_reminder_) {
+            EventReminder();
+            std::this_thread::sleep_for(std::chrono::seconds(30));
+        }
+    });
+}
 
-
+//Main function
 void EventController::Run() {
+    StartEventReminder();
     std::cout << "=======================================================\n";
     std::cout << "                    Events manager \n";
     std::cout << "=======================================================\n";
     while (true) {
-        EventReminder();
+        //EventReminder();
         std::cout << "---------------------\n";
         std::cout << "    Main menu: \n";
         std::cout << "=====================\n";
@@ -833,7 +905,7 @@ void EventController::Run() {
         std::cout << "Your choice is: ";
         int choice = GetUserChoice({0,1,2,3});
         if (choice == 0) {
-            std::cout << "Bye,bye";
+            std::cout << "Bye,bye\n";
             break;
         }
         switch (choice) {
@@ -855,4 +927,3 @@ void EventController::Run() {
         events_.clear();
     }
 }
-
